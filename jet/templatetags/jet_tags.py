@@ -66,13 +66,20 @@ def jet_select2_lookups(field):
         qs = field.field.queryset
         model = qs.model
 
+        # Define a class to be used to create select2 instance
+        if getattr(field.field, 'autocomplete', True):
+            css_class = 'django-jet-select'
+            if 'class' in field.field.widget.widget.attrs:
+                css_class = '{} {}'.format(css_class, field.field.widget.widget.attrs['class'])
+            field.field.widget.widget.attrs['class'] = css_class
+
         if getattr(model, 'autocomplete_search_fields', None) and getattr(field.field, 'autocomplete', True):
             choices = []
             app_label = model._meta.app_label
             model_name = model._meta.object_name
 
             attrs = {
-                'class': 'ajax',
+                'class': 'django-jet-select ajax',
                 'data-app-label': app_label,
                 'data-model': model_name,
                 'data-ajax--url': reverse('jet:model_lookup')
